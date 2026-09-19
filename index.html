@@ -237,9 +237,77 @@ const DAYS = [
   {k:'ו', full:'יום שישי'},
 ];
 const KEEP_DAYS = 92; // ארכיון ~3 חודשים
+const SEED_LABEL = '20–25/9'; // שבוע ה-SEED הנוכחי (ראה applySeedUpdate)
 
-/* ================= SEED (משבוע 13–18/9) ================= */
+/* ================= SEED (משבוע 20–25/9) ================= */
 const SEED = {
+  makolet:{
+    notes:'שימו לב\nחובה להדפיס כרטיס להפסקה!\nביום ראשון אף אחד לא יוצא בלי אישור שלי.\nשימו לב — יום שני 6 שעות.\nכל חריגה רק באישור שלי. תודה על העבודה.\nשבוע טוב.',
+    rows:[
+      {name:'לודה',     group:'מכולת 1', cells:['חג שמח','חג שמח','6:00-15:00','6:00-15:00','6:00-15:00','חופש']},
+      {name:'אירנה',    group:'מכולת 1', cells:['חג שמח','חג שמח','5:00-15:00','6:00-15:00','6:00-15:00','חופש']},
+      {name:'Rosan',    group:'מכולת 1', cells:['6:00-13:00','חג שמח','7:00-14:00','7:00-16:00','7:00-16:00','7:00-15:00']},
+      {name:'otam',     group:'מכולת 1', cells:['6:00-13:00','חג שמח','7:00-15:00','7:00-16:00','7:00-16:00','7:00-15:00']},
+      {name:'DINESH',   group:'מכולת 1', cells:['6:00-13:00','חג שמח','6:00-15:00','6:00-16:00','6:00-16:00','5:00-12:00']},
+      {name:'DIL KUMAR',group:'מכולת 1', cells:['6:00-13:00','חג שמח','5:00-15:00','6:00-16:00','6:00-16:00','6:00-15:00']},
+      {name:'ritas',    group:'מכולת 2', cells:['6:00-13:00','חג שמח','7:00-15:00','7:00-15:00','7:00-16:00','7:00-15:00']},
+      {name:'igor',     group:'מכולת 2', cells:['6:00-13:00','חג שמח','7:00-15:00','7:00-15:00','7:00-15:00','7:00-14:00']},
+      {name:'manog',    group:'מכולת 2', cells:['6:00-13:00','חג שמח','6:00-15:00','6:00-16:00','6:00-16:00','6:00-13:00']},
+    ]
+  },
+  kupot:{
+    notes:'תאריך 20–25/9.\nיום שני — צום קל ומועיל.\nשימו לב, ייתכנו שינויים, אבקש לקבל זאת בהבנה. שבת שלום 🙂\nלתשומת לבכם: אנחנו מבלים יחד שעות רבות בכל יום. בואו נבחר לכבד, לעזור ולפרגן אחד לשני. מילה טובה או עזרה קטנה יכולות לשנות למישהו את כל היום. כשיש אהבת חינם ושיתוף פעולה – גם העבודה נעימה יותר וגם הלקוחות מרגישים את זה. הכי טוב לבחור בטוב ♥',
+    rows:[
+      {name:'שרה',    group:'א.משמרת',   cells:['חג שמח','בריאות','בריאות','בריאות','בריאות','בריאות']},
+      {name:'רויטל',  group:'א.משמרת',   cells:['7-12','צום קל ומועיל','14-22','8-15','חופש','8-16']},
+      {name:'איריס',  group:'א.משמרת',   cells:['','צום קל ומועיל','8-15','פיצול','פיצול','']},
+      {name:'סומיה',  group:'א.מתחם',    cells:['8-14','צום קל ומועיל','8-15','8-18','8-פיצול','8-16']},
+      {name:'נידא',   group:'א.מתחם',    cells:['8-14','צום קל ומועיל','15-22','8-פיצול','8-18 ראשית','7-16']},
+      {name:'ליאל',   group:'אורזנים',   cells:['8-14','צום קל ומועיל','8-15','12-22','12-23','8-15']},
+      {name:'דוד',    group:'אורזנים',   cells:['בריאות','בריאות','בריאות','בריאות','בריאות','בריאות']},
+      {name:'שי',     group:'אורזנים',   cells:['8-14','צום קל ומועיל','15-22','8-15','8-15','8-15']},
+      {name:'ישראל',  group:'קופאיות/ים',cells:['7-14','צום קל ומועיל','11-20','8-15','11-19','9-16']},
+      {name:'אביבה',  group:'קופאיות/ים',cells:['7-9','צום קל ומועיל','8-15','11-19','8-18 ק+ע','7-15']},
+      {name:'סברינה', group:'קופאיות/ים',cells:['8-14','צום קל ומועיל','15-22','14-23','14-23','9-16']},
+      {name:'ואלה',   group:'קופאיות/ים',cells:['9-14','צום קל ומועיל','','','','']},
+      {name:'לנה',    group:'קופאיות/ים',cells:['','','','','17-22','']},
+    ]
+  },
+  yerakot:{
+    notes:'תאריך 20–25/9.\nיום שני — צום קל.',
+    rows:[
+      {name:'אבי',  cells:['5-13','צום קל','6-16','6-16','6-16','6-13']},
+      {name:'דוד',  cells:['צום קל','צום קל','16-22','16-22','16-22','חופש']},
+      {name:'אדרי', cells:['5-13','צום קל','6-16','6-17','6-17','7-16']},
+      {name:'מאיר', cells:['5-13','צום קל','6-17','10-20','10-20','6-16']},
+      {name:'דימה', cells:['5-13','צום קל','6-17','6-17','6-17','6-16']},
+    ]
+  },
+  maadania:{
+    notes:'תאריך 20–25/9.\nיום שני — צום קל.',
+    rows:[
+      {name:'אירית',  cells:['6-13','צום קל','6-16','6-16','6-16','6-14']},
+      {name:'ashutam',cells:['5-13 מאפית','צום קל','15-22','16-23','7-12, 12-16 מאפית','5-15 מאפית']},
+      {name:'fugin',  cells:['6-13','צום קל','7-15','8-16','12-23','7-16']},
+      {name:'vera',   cells:['10-13','צום קל','16-22','16-23','16-23','10-16']},
+      {name:'אשר',   cells:['חג שמח','צום קל','7-13','7-13','7-13','']},
+      {name:'roslan', cells:['5-13','צום קל','6-16','6-16','6-16','5-14']},
+    ]
+  },
+  basar:{
+    notes:'תאריך 20–25/9.\nיום שני — צום קל.',
+    rows:[
+      {name:'יעקב',  cells:['7-12','צום קל','8-17','8-18','8-18','7-14']},
+      {name:'אלי',   cells:['6-13','צום קל','6-16','6-17','6-17','6-12']},
+      {name:'איריס', cells:['חופש','צום קל','17-22','17-23','17-23','חופש']},
+      {name:'ישראל', cells:['8-13','צום קל','8-17','8-17','7-17','9-15']},
+    ]
+  }
+};
+
+/* ================= SEED PREV WEEK (13–18/9, לארכיון בייבוא) ================= */
+const SEED_PREV_WEEK = { label:'13–18/9', depts:{
+
   makolet:{
     temp:true,
     notes:'⚠️ סידור זמני משבוע קודם — ממתין לעדכון לשבוע הקרוב.',
@@ -303,10 +371,10 @@ const SEED = {
       {name:'ישראל', cells:['חג שמח','8-16','8-17','7-17','7-17','8-16 חנות']},
     ]
   }
-};
+}};
 
-/* ================= SEED PREV WEEK (6–11/9, לארכיון בייבוא) ================= */
-const SEED_PREV_WEEK = {
+/* ================= SEED PREV2 WEEK (6–11/9, לארכיון בייבוא) ================= */
+const SEED_PREV2_WEEK = {
   label:'6–11/9',
   depts:{
     makolet:{
@@ -380,17 +448,32 @@ function todayIdx(){ const d=new Date().getDay(); return d>=0&&d<=5 ? d : 0; }
 function loadDB(){
   try{
     const raw = localStorage.getItem(LS_KEY);
-    if(raw){ const d=JSON.parse(raw); if(d&&d.weeks&&d.weeks.length) return pruneDB(d); }
+    if(raw){ const d=JSON.parse(raw); if(d&&d.weeks&&d.weeks.length) return applySeedUpdate(pruneDB(d)); }
   }catch(e){}
   return freshDB();
 }
+/* עדכון אוטומטי: אם בקוד יש שבוע חדש (SEED) שעוד לא קיים בטלפון — מוסיפים אותו כשבוע נוכחי (פעם אחת).
+   שבוע בשם זהה שכבר קיים (יובא/נוצר ידנית) לא נדרס. */
+function applySeedUpdate(d){
+  try{
+    if(d.weeks.some(w=>w.label===SEED_LABEL)) return d;
+    if(localStorage.getItem(LS_KEY+'_seed')===SEED_LABEL) return d;
+    const now=Date.now();
+    const w={ id:'w'+now, label:SEED_LABEL, createdAt:new Date(now).toISOString(), depts:JSON.parse(JSON.stringify(SEED)) };
+    d.weeks.unshift(w); d.activeWeekId=w.id;
+    localStorage.setItem(LS_KEY, JSON.stringify(d));
+    localStorage.setItem(LS_KEY+'_seed', SEED_LABEL);
+  }catch(e){}
+  return d;
+}
 function freshDB(){
   const now = Date.now();
-  const wPrev = { id:'w'+(now-7*864e5), label:SEED_PREV_WEEK.label, createdAt:new Date(now-7*864e5).toISOString(),
-                  depts:JSON.parse(JSON.stringify(SEED_PREV_WEEK.depts)) };
-  const w = { id:'w'+now, label:'13–18/9', createdAt:new Date().toISOString(),
-              depts:JSON.parse(JSON.stringify(SEED)) };
-  return { weeks:[w, wPrev], activeWeekId:w.id };
+  const mk = (src,label,ageDays)=>({ id:'w'+(now-ageDays*864e5), label, createdAt:new Date(now-ageDays*864e5).toISOString(),
+                  depts:JSON.parse(JSON.stringify(src)) });
+  const w     = mk(SEED,'20–25/9',0);
+  const wPrev = mk(SEED_PREV_WEEK.depts,SEED_PREV_WEEK.label,7);
+  const wPrev2= mk(SEED_PREV2_WEEK.depts,SEED_PREV2_WEEK.label,14);
+  return { weeks:[w, wPrev, wPrev2], activeWeekId:w.id };
 }
 function pruneDB(d){
   const now = Date.now();
@@ -412,6 +495,7 @@ function isOff(v){
   if(!s || s==='-' || s==='–' || s==='—' || s==='+') return true;
   if(/חופש|מחלה|בריאות|חל"?ת|חלת/.test(s)) return true;
   if(s.startsWith('חג')) return true;
+  if(s.startsWith('צום')) return true; // יום כיפור — צום קל
   return false;
 }
 function nextWeekLabel(){
