@@ -237,6 +237,8 @@ const DAYS = [
   {k:'ו', full:'יום שישי'},
 ];
 const KEEP_DAYS = 92; // ארכיון ~3 חודשים
+const SEED_REV = 2; // גרסת תיקון של שבוע ה-SEED (2 = מעדניה ומאפית עודכן ב-21/9)
+const SEED_PATCH_DEPTS = ['maadania']; // מחלקות שמוחלפות בשבוע קיים כשה-REV עולה
 const SEED_LABEL = '20–25/9'; // שבוע ה-SEED הנוכחי (ראה applySeedUpdate)
 
 /* ================= SEED (משבוע 20–25/9) ================= */
@@ -286,10 +288,10 @@ const SEED = {
   maadania:{
     notes:'תאריך 20–25/9.\nיום שני — צום קל.',
     rows:[
-      {name:'אירית',  cells:['6-13','צום קל','6-16','6-16','6-16','6-14']},
-      {name:'ashutam',cells:['5-13 מאפית','צום קל','15-22','16-23','7-12, 12-16 מאפית','5-15 מאפית']},
-      {name:'fugin',  cells:['6-13','צום קל','7-15','8-16','12-23','7-16']},
-      {name:'vera',   cells:['10-13','צום קל','16-22','16-23','16-23','10-16']},
+      {name:'אירית',  cells:['6-13','צום קל','5-16','6-16','6-16','6-14']},
+      {name:'ashutam',cells:['5-13 מאפית','צום קל','10-21','10-21','10-21','5-7 מאפית, 7-15 מעדניה']},
+      {name:'fugin',  cells:['6-13','צום קל','מחלה','מחלה','מחלה','מחלה']},
+      {name:'vera',   cells:['10-13','צום קל','16-22','16-23','16-23','10-15']},
       {name:'אשר',   cells:['חג שמח','צום קל','7-13','7-13','7-13','']},
       {name:'roslan', cells:['5-13','צום קל','6-16','6-16','6-16','5-14']},
     ]
@@ -456,13 +458,23 @@ function loadDB(){
    שבוע בשם זהה שכבר קיים (יובא/נוצר ידנית) לא נדרס. */
 function applySeedUpdate(d){
   try{
-    if(d.weeks.some(w=>w.label===SEED_LABEL)) return d;
+    const ex=d.weeks.find(w=>w.label===SEED_LABEL);
+    if(ex){
+      // תיקון שבוע קיים: מחליפים רק את המחלקות שעודכנו (פעם אחת לכל REV)
+      if((+localStorage.getItem(LS_KEY+'_seedrev')||1)<SEED_REV){
+        SEED_PATCH_DEPTS.forEach(k=>{ ex.depts[k]=JSON.parse(JSON.stringify(SEED[k])); });
+        localStorage.setItem(LS_KEY, JSON.stringify(d));
+        localStorage.setItem(LS_KEY+'_seedrev', String(SEED_REV));
+      }
+      return d;
+    }
     if(localStorage.getItem(LS_KEY+'_seed')===SEED_LABEL) return d;
     const now=Date.now();
     const w={ id:'w'+now, label:SEED_LABEL, createdAt:new Date(now).toISOString(), depts:JSON.parse(JSON.stringify(SEED)) };
     d.weeks.unshift(w); d.activeWeekId=w.id;
     localStorage.setItem(LS_KEY, JSON.stringify(d));
     localStorage.setItem(LS_KEY+'_seed', SEED_LABEL);
+    localStorage.setItem(LS_KEY+'_seedrev', String(SEED_REV));
   }catch(e){}
   return d;
 }
