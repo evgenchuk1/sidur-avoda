@@ -49,6 +49,7 @@ body{
   cursor:pointer;white-space:nowrap;flex-shrink:0;
 }
 .btn-ghost:active{opacity:.6}
+.btn-ghost.on{background:#fff;color:var(--primary);border-color:#fff}
 
 /* ===== TABS ===== */
 .tabs{
@@ -176,6 +177,21 @@ table.sched{border-collapse:collapse;width:100%;min-width:600px;font-size:.9rem}
 .bd-person b{font-size:1.15rem;color:var(--primary-dark)}
 .bd-person small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px}
 @keyframes bdPop{from{transform:scale(1) rotate(-6deg)}to{transform:scale(1.18) rotate(6deg)}}
+/* ===== STATS ===== */
+.st-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.st-chip{border:2px solid var(--line);background:#fff;color:var(--muted);border-radius:999px;padding:6px 12px;font-family:inherit;font-weight:800;font-size:.82rem;cursor:pointer}
+.st-chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.st-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.st-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center;box-shadow:var(--shadow)}
+.st-card b{display:block;font-size:1.35rem;color:var(--primary-dark);font-variant-numeric:tabular-nums}
+.st-card small{color:var(--muted);font-size:.74rem;font-weight:700}
+.st-h{font-size:.98rem;font-weight:900;color:var(--primary-dark);margin:16px 0 8px}
+table.st{min-width:0}
+table.st td,table.st th{font-variant-numeric:tabular-nums}
+table.st tr.tot td{background:#ffe3ea;font-weight:900;color:var(--primary-dark)}
+table.st td.wk{background:#fff5f7;font-weight:900;color:var(--primary-dark)}
+.st .q,.st-note .q{color:#b8860b;font-weight:800}
+.st-note{font-size:.76rem;color:var(--muted);margin-top:6px;line-height:1.6}
 </style>
 </head>
 <body>
@@ -190,6 +206,7 @@ table.sched{border-collapse:collapse;width:100%;min-width:600px;font-size:.9rem}
   </div>
   <div class="week-bar">
     <select class="week-select" id="weekSelect" aria-label="בחר שבוע"></select>
+    <button class="btn-ghost" id="btnStats">📊 סטטיסטיקה</button>
     <button class="btn-ghost" id="btnNewWeek">＋ שבוע</button>
   </div>
 </header>
@@ -591,6 +608,7 @@ function render(){
   if(ui.tab==='day')       c.innerHTML='', c.appendChild(viewDay());
   else if(ui.tab==='archive') c.innerHTML='', c.appendChild(viewArchive());
   else if(ui.tab==='emps')    c.innerHTML='', c.appendChild(viewEmps());
+  else if(ui.tab==='stats')   c.innerHTML='', c.appendChild(viewStats());
   else                     c.innerHTML='', c.appendChild(viewDept(ui.tab));
 }
 
@@ -612,6 +630,7 @@ function renderTabs(){
   items.push(`<button class="tab ${ui.tab==='emps'?'active':''}" data-tab="emps">👥 נתוני עובדים</button>`);
   items.push(`<button class="tab ${ui.tab==='archive'?'active':''}" data-tab="archive">🗄️ ארכיון</button>`);
   nav.innerHTML = items.join('');
+  document.getElementById('btnStats').classList.toggle('on', ui.tab==='stats');
   nav.querySelectorAll('.tab').forEach(b=> b.onclick=()=>{ ui.tab=b.dataset.tab; ui.edit=null; render(); });
 }
 
@@ -784,6 +803,103 @@ function viewArchive(){
   return el;
 }
 
+/* ================= STATS ================= */
+/* שעות מתוך תא: "6-14", "6:00-14:30", "8-13, 17-21", "5-7 מאפית, 7-15 מעדניה" → סכום כל הטווחים.
+   יום עבודה בלי שעות מדויקות ("פיצול", "בוקר מ+ר", "משרד") → work:true, h:null */
+function parseHours(v){
+  if(isOff(v)) return {work:false, h:0};
+  const re=/(\d{1,2})(?::(\d{2}))?\s*-\s*(\d{1,2})(?::(\d{2}))?/g;
+  let m, h=0, found=false;
+  while((m=re.exec(v))){
+    const a=+m[1]+(+m[2]||0)/60; let b=+m[3]+(+m[4]||0)/60;
+    if(b<=a) b+=24;
+    h+=b-a; found=true;
+  }
+  return {work:true, h: found ? h : null};
+}
+function fmtH(h){ return String(Math.round(h*10)/10); }
+
+function viewStats(){
+  const wk=viewWeek();
+  const sel=ui.statsDept||'all';
+  const depts=DEPTS.filter(d=> sel==='all' || d.id===sel);
+  const el=document.createElement('div');
+  el.innerHTML=`<div class="section-head"><h2>📊 סטטיסטיקה — שבוע ${escapeHtml(wk.label)}</h2></div>`;
+
+  const chips=document.createElement('div'); chips.className='st-chips';
+  [{id:'all',name:'כל המחלקות'}].concat(DEPTS).forEach(d=>{
+    const b=document.createElement('button');
+    b.className='st-chip'+(d.id===sel?' active':''); b.textContent=d.name;
+    b.onclick=()=>{ ui.statsDept=d.id; render(); };
+    chips.appendChild(b);
+  });
+
+  // נתונים: עובד = שורה במחלקה (אותו שם בשתי מחלקות = שני עובדים שונים)
+  const people=[];
+  depts.forEach(meta=>{
+    const dept=wk.depts[meta.id]; if(!dept) return;
+    dept.rows.filter(r=>(r.name||'').trim()).forEach(r=>{
+      const days=DAYS.map((_,i)=> parseHours(r.cells[i]));
+      people.push({name:r.name, dept:meta.name, temp:!!dept.temp, days,
+                   total:days.reduce((s,d)=>s+(d.h||0),0),
+                   unknown:days.some(d=>d.work&&d.h===null)});
+    });
+  });
+  const perDay=DAYS.map((_,i)=>{
+    const w=people.filter(p=>p.days[i].work);
+    return {count:w.length, hours:w.reduce((s,p)=>s+(p.days[i].h||0),0), unknown:w.some(p=>p.days[i].h===null)};
+  });
+  const totHours=perDay.reduce((s,d)=>s+d.hours,0);
+  const totShifts=perDay.reduce((s,d)=>s+d.count,0);
+  const active=people.filter(p=>p.days.some(d=>d.work)).length;
+  const anyUnknown=perDay.some(d=>d.unknown);
+  const ti=todayIdx();
+
+  el.innerHTML+=`<div class="st-cards">
+    <div class="st-card"><b>${active}</b><small>עובדים בשבוע</small></div>
+    <div class="st-card"><b>${fmtH(totHours)}</b><small>שעות בשבוע</small></div>
+    <div class="st-card"><b>${active?fmtH(totHours/active):0}</b><small>ממוצע שעות לעובד</small></div>
+  </div>`;
+  if(depts.some(m=>wk.depts[m.id]&&wk.depts[m.id].temp))
+    el.innerHTML+=`<div class="banner warn">⏳ חלק מהמחלקות עדיין עם סידור זמני — הנתונים עשויים להשתנות.</div>`;
+
+  // טבלה 1: לפי יום
+  let t1=`<div class="st-h">עובדים ושעות לפי יום</div><div class="sched-wrap"><table class="sched st">
+    <thead><tr><th class="name-col">יום</th><th>עובדים</th><th>סה"כ שעות</th><th>ממוצע לעובד</th></tr></thead><tbody>`;
+  perDay.forEach((d,i)=>{
+    const td=i===ti?' today-col':'';
+    t1+=`<tr><td class="name-col${td}">${DAYS[i].full}</td><td class="${td}">${d.count}</td>
+      <td class="${td}">${fmtH(d.hours)}${d.unknown?' <span class="q">+?</span>':''}</td>
+      <td class="${td}">${d.count?fmtH(d.hours/d.count):'—'}</td></tr>`;
+  });
+  t1+=`<tr class="tot"><td class="name-col">סה"כ שבוע</td><td>${totShifts} <small>משמרות</small></td><td>${fmtH(totHours)}</td><td>${totShifts?fmtH(totHours/totShifts):'—'}</td></tr>`;
+  t1+=`</tbody></table></div>`;
+  el.innerHTML+=t1;
+
+  // טבלה 2: שעות לכל עובד
+  let t2=`<div class="st-h">שעות לכל עובד</div><div class="sched-wrap"><table class="sched st">
+    <thead><tr><th class="name-col">עובד</th>${DAYS.map((d,i)=>`<th class="${i===ti?'today-col':''}">${d.k}</th>`).join('')}<th>סה"כ</th></tr></thead><tbody>`;
+  let lastDept=null;
+  if(!people.length) t2+=`<tr><td class="name-col">—</td><td colspan="7" style="color:#bd8f9c">אין נתונים לשבוע זה</td></tr>`;
+  people.forEach(p=>{
+    if(sel==='all' && p.dept!==lastDept){ t2+=`<tr class="grp-row"><td colspan="8">${escapeHtml(p.dept)}${p.temp?' ⏳':''}</td></tr>`; lastDept=p.dept; }
+    t2+=`<tr><td class="name-col">${escapeHtml(p.name)}</td>`+p.days.map((d,i)=>{
+      const td=i===ti?' today-col':'';
+      if(!d.work) return `<td class="off${td}">—</td>`;
+      if(d.h===null) return `<td class="q${td}">?</td>`;
+      return `<td class="${td}">${fmtH(d.h)}</td>`;
+    }).join('')+`<td class="wk">${fmtH(p.total)}${p.unknown?'<span class="q">+?</span>':''}</td></tr>`;
+  });
+  if(people.length){
+    t2+=`<tr class="tot"><td class="name-col">סה"כ</td>${perDay.map(d=>`<td>${fmtH(d.hours)}</td>`).join('')}<td>${fmtH(totHours)}</td></tr>`;
+  }
+  t2+=`</tbody></table></div>`;
+  el.innerHTML+=t2;
+  if(anyUnknown) el.innerHTML+=`<div class="st-note"><span class="q" style="color:#b8860b;font-weight:800">?</span> — יום עבודה בלי שעות מדויקות בסידור (פיצול / בוקר / משרד): נספר כיום עבודה, אבל השעות שלו לא נכללות בסכום.</div>`;
+  el.insertBefore(chips, el.children[1]); // אחרי כל ה-innerHTML, כדי לא לאבד את ה-onclick
+  return el;
+}
+
 /* ================= NEW WEEK ================= */
 document.getElementById('btnNewWeek').onclick=()=>{
   const lbl = prompt('טווח תאריכים לשבוע החדש:', nextWeekLabel());
@@ -796,6 +912,7 @@ document.getElementById('btnNewWeek').onclick=()=>{
   pruneDB(DB); saveDB(); render();
   toast('שבוע חדש נוצר — עדכן כל מחלקה מצילום מסך');
 };
+document.getElementById('btnStats').onclick=()=>{ ui.tab='stats'; ui.edit=null; render(); window.scrollTo(0,0); };
 document.getElementById('weekSelect').onchange=e=>{ ui.viewWeekId=e.target.value; ui.edit=null; render(); };
 
 /* ================= OCR ================= */
