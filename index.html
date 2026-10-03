@@ -147,6 +147,35 @@ table.sched{border-collapse:collapse;width:100%;min-width:600px;font-size:.9rem}
 .cp-text{font-size:13.5px;line-height:1.8;color:#444}
 .toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%) translateY(20px);background:#2A0010;color:#fff;padding:10px 18px;border-radius:999px;font-size:.85rem;font-weight:700;opacity:0;transition:all .3s;z-index:600;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ===== EMPLOYEES ===== */
+.emp-tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.emp-search{width:100%;border:2px solid var(--line);border-radius:12px;padding:10px 13px;font-family:inherit;font-size:.95rem;margin-bottom:12px;background:#fff}
+.emp-grp{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.emp-grp h3{background:#ffe3ea;color:var(--primary-dark);font-size:.92rem;font-weight:900;padding:8px 12px;display:flex;justify-content:space-between}
+.emp{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid #f6dde3}
+.emp:first-of-type{border-top:none}
+.emp .who{flex:1;min-width:0}
+.emp .who b{font-size:.95rem}
+.emp .who small{display:block;color:var(--muted);font-size:.76rem;margin-top:2px;line-height:1.45}
+.emp .who .bd{color:var(--primary-dark);font-weight:700}
+.emp.today{background:#fff2c9}
+.ic-btn{width:38px;height:38px;border-radius:50%;border:none;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem;text-decoration:none;flex-shrink:0;cursor:pointer}
+.ic-call{background:#e3f5e8}.ic-wa{background:#dcf8c6}.ic-edit{background:#f4eef0}
+.bd-up{background:#fff;border:1px solid var(--line);border-right:5px solid #E8A400;border-radius:12px;padding:10px 13px;margin-bottom:12px;font-size:.87rem;line-height:1.75}
+.bd-up b{color:var(--primary-dark)}
+.lock-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 16px;text-align:center;box-shadow:var(--shadow)}
+.lock-card input{width:100%;max-width:240px;border:2px solid var(--line);border-radius:12px;padding:11px;font-size:1.05rem;text-align:center;margin:12px 0;font-family:inherit}
+.fld{display:block;margin-bottom:10px;font-size:.8rem;font-weight:800;color:var(--muted)}
+.fld input{display:block;width:100%;margin-top:4px;border:1px solid var(--line);border-radius:9px;padding:9px;font-family:inherit;font-size:.92rem}
+/* birthday popup */
+.bd-modal{text-align:center;background:linear-gradient(180deg,#fff7d6 0%,#fff 55%);border:3px solid #E8A400}
+.bd-cake{font-size:4.2rem;line-height:1;animation:bdPop 1s ease-in-out infinite alternate}
+.bd-modal h3{font-size:1.45rem;color:var(--primary)}
+.bd-person{background:#fff;border:2px solid #f5d27a;border-radius:14px;padding:12px;margin:10px 0;display:flex;align-items:center;gap:10px;text-align:right}
+.bd-person .who{flex:1}
+.bd-person b{font-size:1.15rem;color:var(--primary-dark)}
+.bd-person small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px}
+@keyframes bdPop{from{transform:scale(1) rotate(-6deg)}to{transform:scale(1.18) rotate(6deg)}}
 </style>
 </head>
 <body>
@@ -216,6 +245,41 @@ table.sched{border-collapse:collapse;width:100%;min-width:600px;font-size:.9rem}
   </div>
 </div>
 
+<!-- BIRTHDAY POPUP -->
+<div class="ov" id="bdOv">
+  <div class="modal bd-modal">
+    <div class="bd-cake">🎂</div>
+    <h3>יום הולדת שמח!</h3>
+    <p class="hint" style="text-align:center;margin-bottom:4px">היום חוגגים בסניף:</p>
+    <div id="bdList"></div>
+    <div class="modal-actions">
+      <button class="btn btn-soft" id="bdSound">🔊 שוב צליל</button>
+      <button class="btn btn-primary" id="bdClose">ראיתי 🎉</button>
+    </div>
+  </div>
+</div>
+
+<!-- EMPLOYEE EDIT MODAL -->
+<div class="ov" id="empOv">
+  <div class="modal">
+    <h3 id="empTitle">עריכת עובד</h3>
+    <label class="fld">שם פרטי<input id="efN"></label>
+    <label class="fld">שם משפחה<input id="efL"></label>
+    <label class="fld">כינוי (איך קוראים לו בסניף)<input id="efK"></label>
+    <label class="fld">מחלקה<input id="efDept"></label>
+    <label class="fld">תפקיד<input id="efRole"></label>
+    <label class="fld">טלפון<input id="efPh" type="tel" inputmode="tel" placeholder="05X-XXXXXXX"></label>
+    <label class="fld">תאריך לידה<input id="efBd" type="date"></label>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="efSave">💾 שמירה</button>
+      <button class="btn btn-line" id="efCancel">ביטול</button>
+    </div>
+    <div class="modal-actions" id="efDelRow">
+      <button class="btn btn-line" id="efDel" style="color:var(--primary)">🗑 מחיקת עובד</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -237,12 +301,78 @@ const DAYS = [
   {k:'ו', full:'יום שישי'},
 ];
 const KEEP_DAYS = 92; // ארכיון ~3 חודשים
-const SEED_REV = 2; // גרסת תיקון של שבוע ה-SEED (2 = מעדניה ומאפית עודכן ב-21/9)
-const SEED_PATCH_DEPTS = ['maadania']; // מחלקות שמוחלפות בשבוע קיים כשה-REV עולה
-const SEED_LABEL = '27/9–2/10'; // שבוע ה-SEED הנוכחי (ראה applySeedUpdate)
+const SEED_REV = 2; // גרסת תיקון של שבוע ה-SEED (להעלות + למלא SEED_PATCH_DEPTS כדי לתקן שבוע קיים)
+const SEED_PATCH_DEPTS = []; // מחלקות שמוחלפות בשבוע קיים כשה-REV עולה
+const SEED_LABEL = '4–9/10'; // שבוע ה-SEED הנוכחי (ראה applySeedUpdate)
 
-/* ================= SEED (משבוע 27/9–2/10) ================= */
+/* ================= SEED (משבוע 4–9/10) ================= */
 const SEED = {
+  makolet:{
+    notes:'השעות הועתקו מסידור 27/9–2/10.\nשימו לב\nחובה להדפיס כרטיס להפסקה!\nביום ראשון אף אחד לא יוצא בלי אישור שלי.\nשימו לב — יום שני 6 שעות.\nכל חריגה רק באישור שלי. תודה על העבודה.\nשבוע טוב.',
+    rows:[
+      {name:'לודה',     group:'מכולת 1', cells:['6:00-14:00','6:00-14:00','6:00-15:00','6:00-15:00','6:00-15:00','חופש']},
+      {name:'אירנה',    group:'מכולת 1', cells:['6:00-14:00','6:00-14:00','6:00-15:00','6:00-15:00','6:00-15:00','חופש']},
+      {name:'Rosan',    group:'מכולת 1', cells:['7:00-15:00','7:00-15:00','7:00-15:00','7:00-16:00','7:00-16:00','7:00-15:00']},
+      {name:'otam',     group:'מכולת 1', cells:['7:00-15:00','7:00-15:00','7:00-15:00','7:00-16:00','7:00-16:00','7:00-15:00']},
+      {name:'DINESH',   group:'מכולת 1', cells:['6:00-15:00','6:00-15:00','6:00-15:00','6:00-16:00','6:00-16:00','6:00-13:00']},
+      {name:'DIL KUMAR',group:'מכולת 1', cells:['6:00-15:00','6:00-15:00','6:00-15:00','6:00-16:00','6:00-16:00','6:00-15:00']},
+      {name:'ritas',    group:'מכולת 2', cells:['7:00-15:00','7:00-15:00','7:00-15:00','7:00-16:00','7:00-16:00','7:00-15:00']},
+      {name:'igor',     group:'מכולת 2', cells:['7:00-15:00','7:00-15:00','7:00-15:00','7:00-15:00','7:00-15:00','7:00-14:00']},
+      {name:'manog',    group:'מכולת 2', cells:['6:00-15:00','6:00-15:00','6:00-15:00','6:00-16:00','6:00-16:00','6:00-13:00']},
+      {name:'ליאור',    group:'מכולת 2', cells:['7:00-15:00','7:00-14:00','7:00-15:00','7:00-16:00','7:00-16:00','7:00-12:00']},
+    ]
+  },
+  kupot:{
+    notes:'תאריך 4–9/10.\nשימו לב, ייתכנו שינויים, אבקש לקבל זאת בהבנה. שבת שלום 🙂\nלתשומת לבכם: אנחנו מבלים יחד שעות רבות בכל יום. בואו נבחר לכבד, לעזור ולפרגן אחד לשני. מילה טובה או עזרה קטנה יכולות לשנות למישהו את כל היום. כשיש אהבת חינם ושיתוף פעולה – גם העבודה נעימה יותר וגם הלקוחות מרגישים את זה. הכי טוב לבחור בטוב ♥',
+    rows:[
+      {name:'שרה',     group:'א.משמרת',   cells:['בריאות','בריאות','בריאות','בריאות','בריאות','בריאות']},
+      {name:'רויטל',   group:'א.משמרת',   cells:['15-22','8-15','8-18','8-15','15-23','9-16']},
+      {name:'איריס',   group:'א.משמרת',   cells:['בוקר מ+ר','פיצול','פיצול','8-18','בוקר מ+ר','']},
+      {name:'סומיה',   group:'א.מתחם',    cells:['8-15','15-22','8-15','8-פיצול','15-23','9-16']},
+      {name:'נידא',    group:'א.מתחם',    cells:['15-22','8-18 ע+ר','15-22','15-23 ראשית','8-15','7-16']},
+      {name:'ליאל',    group:'אורזנים',   cells:['7-15','8-15','15-22','8-15','15-23','8-15']},
+      {name:'דוד',     group:'אורזנים',   cells:['בריאות','בריאות','בריאות','בריאות','בריאות','בריאות']},
+      {name:'שי',      group:'אורזנים',   cells:['10-20','15-22','8-15','15-23','8-15','8-15']},
+      {name:'ישראל',   group:'קופאיות/ים',cells:['15-22','10-17','11-18','8-15','11-19','9-16']},
+      {name:'אביבה',   group:'קופאיות/ים',cells:['8-15','8-15','15-22','15-23','8-15','7-14']},
+      {name:'אנסטסיה', group:'קופאיות/ים',cells:['11-20','15-22','8-15','11-20','15-23','8-16']},
+    ]
+  },
+  yerakot:{
+    notes:'תאריך 4–9/10. סה"כ 195.5 שעות.',
+    rows:[
+      {name:'אבי',  cells:['6-14','6-14','6-14','6-16','6-16','6-13']},
+      {name:'דוד',  cells:['16-22','16-22','16-22','16-22','16-22','חופש']},
+      {name:'אדרי', cells:['6-16','6-16','6-16','6-17','6-17','7-16']},
+      {name:'מאיר', cells:['6-16','6-16','6-17','10-20','10-20','6-16']},
+      {name:'דימה', cells:['6-16','6-16','6-16','6-17','6-17','6-16']},
+    ]
+  },
+  maadania:{
+    notes:'תאריך 4–9/10.',
+    rows:[
+      {name:'אירית',  cells:['6-16','6-16','6-16','6-16','6-16','6-14']},
+      {name:'ashutam',cells:['10-21','10-21','10-21','10-21','10-21','5-7 מאפית, 7-15 מעדניה']},
+      {name:'fugin',  cells:['מחלה','מחלה','מחלה','מחלה','מחלה','מחלה']},
+      {name:'vera',   cells:['16-22','16-22','16-22','16-23','16-23','10-15']},
+      {name:'אשר',   cells:['7-13','7-13','7-13','7-13','7-13','']},
+      {name:'roslan', cells:['6-16','6-16','6-16','חופש','חופש','חופש']},
+      {name:'samuel', cells:['','','','6-16 מאפית','6-16 מאפית','5-14 מאפית']},
+    ]
+  },
+  basar:{
+    notes:'תאריך 4–9/10.',
+    rows:[
+      {name:'יעקב',  cells:['8-17','8-17','8-17','8-18','8-18','7-14']},
+      {name:'אלי',   cells:['חופש','6-16','6-16','6-17','6-17','6-12']},
+      {name:'איריס', cells:['6-10, 18-22','17-22','17-22','17-23','17-23','חופש']},
+      {name:'ישראל', cells:['8-18','8-17','8-17','8-13, 17-21','8-13, 17-21','9-15']},
+    ]
+  }
+};
+
+/* ================= SEED PREV WEEK (27/9–2/10, לארכיון) ================= */
+const SEED_PREV_WEEK = { label:'27/9–2/10', depts:{
   makolet:{
     notes:'שימו לב\nחובה להדפיס כרטיס להפסקה!\nביום ראשון אף אחד לא יוצא בלי אישור שלי.\nשימו לב — יום שני 6 שעות.\nכל חריגה רק באישור שלי. תודה על העבודה.\nשבוע טוב.',
     rows:[
@@ -304,10 +434,10 @@ const SEED = {
       {name:'ישראל', cells:['8-17','8-17','8-17','8-13, 17-21','8-13, 17-21','9-15']},
     ]
   }
-};
+}};
 
-/* ================= SEED PREV WEEK (20–25/9, לארכיון בייבוא) ================= */
-const SEED_PREV_WEEK = { label:'20–25/9', depts:{
+/* ================= SEED PREV2 WEEK (20–25/9, לארכיון) ================= */
+const SEED_PREV2_WEEK = { label:'20–25/9', depts:{
   makolet:{
     notes:'שימו לב\nחובה להדפיס כרטיס להפסקה!\nביום ראשון אף אחד לא יוצא בלי אישור שלי.\nשימו לב — יום שני 6 שעות.\nכל חריגה רק באישור שלי. תודה על העבודה.\nשבוע טוב.',
     rows:[
@@ -368,74 +498,6 @@ const SEED_PREV_WEEK = { label:'20–25/9', depts:{
       {name:'אלי',   cells:['6-13','צום קל','6-16','6-17','6-17','6-12']},
       {name:'איריס', cells:['חופש','צום קל','17-22','17-23','17-23','חופש']},
       {name:'ישראל', cells:['8-13','צום קל','8-17','8-17','7-17','9-15']},
-    ]
-  }
-}};
-
-/* ================= SEED PREV2 WEEK (13–18/9, לארכיון בייבוא) ================= */
-const SEED_PREV2_WEEK = { label:'13–18/9', depts:{
-
-  makolet:{
-    temp:true,
-    notes:'⚠️ סידור זמני משבוע קודם — ממתין לעדכון לשבוע הקרוב.',
-    rows:[
-      {name:'לודה',     group:'מכולת 1', cells:['6:00-15:00','6:00-15:00','6:00-15:00','6:00-12:00, 17:00-21:00','6:00-15:00','6:00-12:00']},
-      {name:'אירנה',    group:'מכולת 1', cells:['6:00-15:00','6:00-15:00','6:00-15:00','6:00-16:00','10:00-20:00','6:00-12:00']},
-      {name:'Rosan',    group:'מכולת 1', cells:['7:00-15:00','7:00-15:00','7:00-14:00, 17:00-21:00','7:00-16:00','7:00-16:00','7:00-15:00']},
-      {name:'otam',     group:'מכולת 1', cells:['7:00-15:00','7:00-15:00','7:00-14:00, 17:00-21:00','7:00-16:00','7:00-16:00','7:00-15:00']},
-      {name:'DINESH',   group:'מכולת 1', cells:['6:00-15:00','6:00-15:00','6:00-15:00','6:00-14:00, 17:00-20:00','6:00-16:00','5:00-12:00']},
-      {name:'DIL KUMAR',group:'מכולת 1', cells:['6:00-15:00','6:00-15:00','6:00-15:00','6:00-16:00','6:00-14:00, 17:00-21:00','6:00-15:00']},
-      {name:'ritas',    group:'מכולת 2', cells:['7-15','7-15','7-15','7-17','7-17','7-15']},
-      {name:'igor',     group:'מכולת 2', cells:['7-15','7-15','7-15','7-17','7-17','7-14']},
-      {name:'manog',    group:'מכולת 2', cells:['6-15','6-15','6-15','6-16','6-16','6-13']},
-    ]
-  },
-  kupot:{
-    notes:'תאריך 13–18/9.\nיום ראשון חג — כולם חג שמח.',
-    rows:[
-      {name:'שרה',    group:'א.משמרת',   cells:['חג שמח','בריאות','בריאות','בריאות','בריאות','בריאות']},
-      {name:'רויטל',  group:'א.משמרת',   cells:['חג שמח','15-22','8-18','15-23','8-18','9-16']},
-      {name:'איריס',  group:'א.משמרת',   cells:['חג שמח','','פיצול','8-18','פיצול','עזרה']},
-      {name:'סומיה',  group:'א.מתחם',    cells:['חג שמח','15-22','8-15','8-18','8-פיצול','8-16']},
-      {name:'נידא',   group:'א.מתחם',    cells:['חג שמח','8-15 ראשית','15-22','8-פיצול','8-18','7-16']},
-      {name:'ליאל',   group:'אורזנים',   cells:['חג שמח','8-15','15-22','8-17','12-23','8-16']},
-      {name:'דוד',    group:'אורזנים',   cells:['חג שמח','בריאות','בריאות','בריאות','בריאות','בריאות']},
-      {name:'שי',     group:'אורזנים',   cells:['חג שמח','15-22','8-15','12-23','8-17','8-16']},
-      {name:'ישראל',  group:'קופאיות/ים',cells:['חג שמח','8-15','15-22','11-20','8-15','7-16']},
-      {name:'אביבה',  group:'קופאיות/ים',cells:['חג שמח','8-15 עצמיות','8-15','15-23','8-15','7-16']},
-      {name:'סברינה', group:'קופאיות/ים',cells:['חג שמח','15-22','15-22','12-23','14-23','9-16']},
-      {name:'מאור',   group:'קופאיות/ים',cells:['חג שמח','11-19','8-15','8-15','15-23','9-16']},
-    ]
-  },
-  yerakot:{
-    notes:'תאריך 13–18/9.\nיום ראשון חג — כולם חג שמח.',
-    rows:[
-      {name:'אבי',  cells:['חג שמח','6-16','6-16','6-16','6-16','6-13']},
-      {name:'דוד',  cells:['חג שמח','16-22','16-22','16-22','16-22','חופש']},
-      {name:'אדרי', cells:['חג שמח','6-16','6-16','6-17','6-17','7-16']},
-      {name:'מאיר', cells:['חג שמח','6-16','6-17','10-20','10-20','6-16']},
-      {name:'דימה', cells:['חג שמח','6-16','6-17','6-17','6-17','6-16']},
-    ]
-  },
-  maadania:{
-    notes:'תאריך 13–18/9.\nיום ראשון חג — כולם חג שמח.',
-    rows:[
-      {name:'אירית',  cells:['חג שמח','6-16','6-16','6-16','6-16','6-14']},
-      {name:'ashutam',cells:['חג שמח','7-15','15-22','16-23','7-15','7-16']},
-      {name:'fugin',  cells:['חג שמח','15-22','7-15','8-16','15-23','9-16']},
-      {name:'vera',   cells:['חג שמח','16-22','16-22','16-23','16-23','10-16']},
-      {name:'אשר',   cells:['חג שמח','7-13','7-13','7-13','7-13','']},
-      {name:'roslan', cells:['חג שמח','6-16','6-16','6-16','6-16','5-14']},
-    ]
-  },
-  basar:{
-    notes:'תאריך 13–18/9.\nיום ראשון חג — כולם חג שמח.',
-    rows:[
-      {name:'יעקב',  cells:['חג שמח','8-17','8-17','8-18','8-18','7-14']},
-      {name:'אלי',   cells:['חג שמח','16-22','6-16','6-17','6-17','6-12']},
-      {name:'איריס', cells:['חג שמח','7-16','17-22','17-23','17-23','חופש']},
-      {name:'שלמה',  cells:['חג שמח','8-17','7-16','8-12, 16-22','8-12, 16-22','8-16']},
-      {name:'ישראל', cells:['חג שמח','8-16','8-17','7-17','7-17','8-16 חנות']},
     ]
   }
 }};
@@ -528,6 +590,7 @@ function render(){
   const c = document.getElementById('content');
   if(ui.tab==='day')       c.innerHTML='', c.appendChild(viewDay());
   else if(ui.tab==='archive') c.innerHTML='', c.appendChild(viewArchive());
+  else if(ui.tab==='emps')    c.innerHTML='', c.appendChild(viewEmps());
   else                     c.innerHTML='', c.appendChild(viewDept(ui.tab));
 }
 
@@ -546,6 +609,7 @@ function renderTabs(){
     return `<button class="tab ${ui.tab===d.id?'active':''} ${temp?'temp':''}" data-tab="${d.id}">${d.name}</button>`;
   });
   items.push(`<button class="tab ${ui.tab==='day'?'active':''}" data-tab="day">📅 לפי יום</button>`);
+  items.push(`<button class="tab ${ui.tab==='emps'?'active':''}" data-tab="emps">👥 נתוני עובדים</button>`);
   items.push(`<button class="tab ${ui.tab==='archive'?'active':''}" data-tab="archive">🗄️ ארכיון</button>`);
   nav.innerHTML = items.join('');
   nav.querySelectorAll('.tab').forEach(b=> b.onclick=()=>{ ui.tab=b.dataset.tab; ui.edit=null; render(); });
@@ -900,6 +964,245 @@ document.getElementById('importFile').onchange=e=>{
   rd.readAsText(f);
 };
 
+/* ================= נתוני עובדים + ימי הולדת =================
+   הנתונים (טלפונים + תאריכי לידה) מוצפנים בקוד (AES-GCM) — האתר ציבורי.
+   בפתיחה הראשונה בכל טלפון מקלידים קוד סניף פעם אחת; אחר כך הנתונים נשמרים בטלפון. */
+const EMP_LS  = 'sidurEvoda_emps';
+const EMP_REV = 1; // להעלות כשמעדכנים את EMP_ENC
+const EMP_ENC = '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';
+let EMPS = loadEmps();
+let empEditId = null;
+
+function loadEmps(){ try{ const o=JSON.parse(localStorage.getItem(EMP_LS)); if(o&&o.list) return o; }catch(e){} return null; }
+function saveEmps(){ try{ localStorage.setItem(EMP_LS, JSON.stringify(EMPS)); }catch(e){ toast('שגיאת שמירה'); } }
+
+async function decryptEmps(code){
+  const raw=Uint8Array.from(atob(EMP_ENC), c=>c.charCodeAt(0));
+  const salt=raw.slice(0,16), iv=raw.slice(16,28), ct=raw.slice(28);
+  const base=await crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveKey']);
+  const key=await crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations:150000, hash:'SHA-256'}, base,
+                                          {name:'AES-GCM', length:256}, false, ['decrypt']);
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM', iv}, key, ct);
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+/* מיזוג גרסה חדשה מהקוד: עובדים שנערכו/נוספו ידנית בטלפון נשמרים */
+function mergeEmps(seed){
+  const mine = EMPS ? EMPS.list.filter(e=>e.ed || e.id.startsWith('u')) : [];
+  const delIds = EMPS ? (EMPS.del||[]) : [];
+  const list = seed.list.filter(e=>!delIds.includes(e.id) && !mine.some(m=>m.id===e.id)).concat(mine);
+  EMPS = { rev:seed.rev, list, del:delIds };
+  saveEmps();
+}
+async function unlockEmps(code){
+  const seed=await decryptEmps(code.trim());
+  localStorage.setItem(EMP_LS+'_k', code.trim());
+  mergeEmps(seed);
+}
+async function refreshEmpsIfNewer(){
+  const k=localStorage.getItem(EMP_LS+'_k');
+  if(!EMPS || !k || (EMPS.rev||0)>=EMP_REV) return;
+  try{ mergeEmps(await decryptEmps(k)); }catch(e){}
+}
+
+/* ---- helpers ---- */
+const pad2=n=>String(n).padStart(2,'0');
+function todayKey(){ const t=new Date(); return pad2(t.getMonth()+1)+'-'+pad2(t.getDate()); }
+function dateKeyFull(){ const t=new Date(); return t.getFullYear()+'-'+todayKey(); }
+function empName(e){ return e.k || e.n; }
+function empFull(e){ return [e.n,e.l].filter(Boolean).join(' '); }
+function fmtBd(e){ if(!e.d) return 'תאריך לידה לא ידוע'; const [m,d]=e.d.split('-'); return `${+d}/${+m}${e.y?'/'+e.y:''}`; }
+function ageThisYear(e){ return e.y ? new Date().getFullYear()-e.y : null; }
+function telHref(ph){ return 'tel:'+(ph||'').replace(/[^\d+]/g,''); }
+function waHref(ph, msg){ const d=(ph||'').replace(/\D/g,''); const intl=d.startsWith('0')?'972'+d.slice(1):d; return 'https://wa.me/'+intl+(msg?'?text='+encodeURIComponent(msg):''); }
+function birthdaysToday(){ if(!EMPS) return []; const k=todayKey(); return EMPS.list.filter(e=>e.d===k); }
+function daysUntil(e){
+  if(!e.d) return 999;
+  const t=new Date(); t.setHours(0,0,0,0);
+  const [m,d]=e.d.split('-').map(Number);
+  let x=new Date(t.getFullYear(), m-1, d); if(x<t) x=new Date(t.getFullYear()+1, m-1, d);
+  return Math.round((x-t)/864e5);
+}
+
+/* ---- צליל חזק (Web Audio) ---- */
+let AC=null;
+function playAlarm(){
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state!=='running'){
+      AC.resume().catch(()=>{});
+      if(AC.state!=='running'){ // iOS: צליל רק אחרי נגיעה במסך
+        const once=()=>{ document.removeEventListener('touchend',once,true); document.removeEventListener('click',once,true); playAlarm(); };
+        document.addEventListener('touchend',once,true); document.addEventListener('click',once,true);
+        return;
+      }
+    }
+    const t0=AC.currentTime+0.05;
+    const master=AC.createGain(); master.gain.value=1; master.connect(AC.destination);
+    const tone=(f,start,dur,type)=>{
+      const o=AC.createOscillator(), g=AC.createGain();
+      o.type=type||'square'; o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001,start); g.gain.exponentialRampToValueAtTime(0.9,start+0.02);
+      g.gain.setValueAtTime(0.9,start+dur-0.04); g.gain.exponentialRampToValueAtTime(0.0001,start+dur);
+      o.connect(g); g.connect(master); o.start(start); o.stop(start+dur+0.02);
+    };
+    // 1) אזעקה: 3 סבבים של צפצוף כפול
+    let t=t0;
+    for(let r=0;r<3;r++){ for(let i=0;i<4;i++){ tone(i%2?1320:990,t,0.14); t+=0.16; } t+=0.18; }
+    // 2) "היום יום הולדת" — Happy Birthday
+    const N={G4:392,A4:440,B4:494,C5:523,D5:587,E5:659,F5:698,G5:784};
+    const mel=[['G4',.3],['G4',.15],['A4',.45],['G4',.45],['C5',.45],['B4',.9],
+               ['G4',.3],['G4',.15],['A4',.45],['G4',.45],['D5',.45],['C5',.9]];
+    t+=0.2; mel.forEach(([n,d])=>{ tone(N[n],t,d*0.95,'sawtooth'); t+=d; });
+  }catch(e){}
+  try{ navigator.vibrate && navigator.vibrate([400,150,400,150,800]); }catch(e){}
+}
+
+/* ---- פופ-אפ יום הולדת ---- */
+function showBirthdayPopup(list){
+  const box=document.getElementById('bdList');
+  box.innerHTML=list.map(e=>{
+    const age=ageThisYear(e);
+    const msg=`מזל טוב ${empName(e)}! 🎂 יום הולדת שמח מכל הצוות בסניף 🎉`;
+    return `<div class="bd-person"><div class="who"><b>🎉 ${escapeHtml(empName(e))}</b>
+      <small>${escapeHtml(empFull(e))} · ${escapeHtml(e.dept||'')}${age?` · חוגג/ת ${age}`:''}</small></div>
+      ${e.ph?`<a class="ic-btn ic-call" href="${telHref(e.ph)}">📞</a><a class="ic-btn ic-wa" target="_blank" href="${waHref(e.ph,msg)}">💬</a>`:''}</div>`;
+  }).join('');
+  document.getElementById('bdOv').classList.add('active');
+  playAlarm();
+  // התראת מערכת (אם המשתמש אישר התראות)
+  try{
+    if('Notification' in window && Notification.permission==='granted' && navigator.serviceWorker){
+      navigator.serviceWorker.ready.then(reg=> reg.showNotification('🎂 יום הולדת היום בסניף!', {
+        body: list.map(e=>empName(e)+(e.dept?' ('+e.dept+')':'')).join(', '),
+        icon:'icon-192.png', badge:'icon-192.png', tag:'bd-'+dateKeyFull(), vibrate:[400,150,400,150,800], requireInteraction:true
+      })).catch(()=>{});
+    }
+  }catch(e){}
+}
+function checkBirthdays(force){
+  const list=birthdaysToday();
+  if(!list.length) return;
+  if(!force && localStorage.getItem(EMP_LS+'_seen')===dateKeyFull()) return;
+  showBirthdayPopup(list);
+}
+document.getElementById('bdClose').onclick=()=>{
+  localStorage.setItem(EMP_LS+'_seen', dateKeyFull());
+  document.getElementById('bdOv').classList.remove('active');
+};
+document.getElementById('bdSound').onclick=()=> playAlarm();
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ checkBirthdays(); if(ui.tab==='emps') render(); } });
+
+/* ---- לשונית נתוני עובדים ---- */
+function viewEmps(){
+  const el=document.createElement('div');
+  el.innerHTML=`<div class="section-head"><h2>👥 נתוני עובדים</h2></div>`;
+  if(!EMPS){
+    el.innerHTML+=`<div class="lock-card">🔒<br><b>הנתונים מוגנים בקוד סניף</b>
+      <p class="hint" style="margin-top:8px">יש להקליד את הקוד פעם אחת בלבד — לאחר מכן הנתונים יישמרו בטלפון וההתראות על ימי הולדת יופעלו.</p>
+      <input id="empCode" type="password" placeholder="קוד סניף" autocomplete="off"><br>
+      <button class="btn btn-primary" id="empUnlock">פתיחה</button></div>`;
+    setTimeout(()=>{
+      const go=async()=>{
+        const v=el.querySelector('#empCode').value; if(!v.trim()) return;
+        try{ await unlockEmps(v); toast('הנתונים נטענו ✓'); render(); checkBirthdays(); }
+        catch(e){ toast('קוד שגוי'); }
+      };
+      el.querySelector('#empUnlock').onclick=go;
+      el.querySelector('#empCode').onkeydown=e=>{ if(e.key==='Enter') go(); };
+    },0);
+    return el;
+  }
+
+  // היום + קרובים
+  const today=birthdaysToday();
+  const up=EMPS.list.filter(e=>e.d && daysUntil(e)>0 && daysUntil(e)<=30).sort((a,b)=>daysUntil(a)-daysUntil(b));
+  let bh='';
+  if(today.length) bh+=`🎂 <b>היום:</b> ${today.map(e=>escapeHtml(empName(e))+' ('+escapeHtml(e.dept)+')').join(', ')}<br>`;
+  bh+= up.length ? `📅 <b>ב-30 הימים הקרובים:</b><br>`+up.map(e=>{
+          const n=daysUntil(e); return `${fmtBd(e).split('/').slice(0,2).join('/')} — ${escapeHtml(empName(e))} <span style="color:var(--muted)">(${escapeHtml(e.dept)}${n===1?' · מחר':` · עוד ${n} ימים`})</span>`;
+        }).join('<br>') : 'אין ימי הולדת ב-30 הימים הקרובים.';
+  el.innerHTML+=`<div class="bd-up">${bh}</div>`;
+
+  const notifState = !('Notification' in window) ? '' : Notification.permission==='granted' ? '🔔 התראות פעילות' : '🔔 אפשר התראות';
+  el.innerHTML+=`<div class="emp-tools">
+      <button class="btn btn-soft" id="empSoundTest">🔊 בדיקת צליל</button>
+      ${notifState?`<button class="btn btn-soft" id="empNotif">${notifState}</button>`:''}
+      ${today.length?`<button class="btn btn-soft" id="empShowBd">🎂 הצג פופ-אפ</button>`:''}
+      <button class="btn btn-primary" id="empAdd">＋ עובד</button>
+    </div>
+    <input class="emp-search" id="empSearch" placeholder="🔍 חיפוש לפי שם, מחלקה או טלפון…">`;
+
+  const list=document.createElement('div');
+  const groups={};
+  EMPS.list.forEach(e=>{ (groups[e.dept||'אחר']=groups[e.dept||'אחר']||[]).push(e); });
+  const order=Object.keys(groups).sort((a,b)=>a.localeCompare(b,'he'));
+  const tk=todayKey();
+  order.forEach(g=>{
+    const arr=groups[g].sort((a,b)=> (b.ph?1:0)-(a.ph?1:0) || empName(a).localeCompare(empName(b),'he'));
+    const card=document.createElement('div'); card.className='emp-grp';
+    card.innerHTML=`<h3><span>${escapeHtml(g)}</span><span>${arr.length}</span></h3>`+arr.map(e=>{
+      const nick = e.k && e.k!==e.n ? ` <span style="font-weight:600;color:var(--muted);font-size:.8rem">(${escapeHtml(empFull(e))})</span>` : (e.l?` ${escapeHtml(e.l)}`:'');
+      const search=[e.k,e.n,e.l,e.dept,e.role,e.ph,(e.ph||'').replace(/\D/g,'')].join(' ').toLowerCase();
+      return `<div class="emp ${e.d===tk?'today':''}" data-s="${escapeAttr(search)}">
+        <div class="who"><b>${e.d===tk?'🎂 ':''}${escapeHtml(empName(e))}</b>${nick}
+          <small>${e.role?escapeHtml(e.role)+'<br>':''}<span class="bd">🎂 ${fmtBd(e)}</span>${e.ph?` · <span dir="ltr">${escapeHtml(e.ph)}</span>`:''}</small></div>
+        ${e.ph?`<a class="ic-btn ic-call" href="${telHref(e.ph)}">📞</a><a class="ic-btn ic-wa" target="_blank" href="${waHref(e.ph)}">💬</a>`:''}
+        <button class="ic-btn ic-edit" data-ed="${e.id}">✏️</button></div>`;
+    }).join('');
+    list.appendChild(card);
+  });
+  el.appendChild(list);
+
+  setTimeout(()=>{
+    el.querySelector('#empSoundTest').onclick=()=> playAlarm();
+    const bn=el.querySelector('#empNotif');
+    if(bn) bn.onclick=async()=>{ try{ const p=await Notification.requestPermission(); toast(p==='granted'?'התראות הופעלו':'ההתראות לא אושרו'); render(); }catch(e){ toast('הדפדפן לא תומך בהתראות'); } };
+    const bs=el.querySelector('#empShowBd'); if(bs) bs.onclick=()=> checkBirthdays(true);
+    el.querySelector('#empAdd').onclick=()=> openEmpEdit(null);
+    el.querySelectorAll('[data-ed]').forEach(b=> b.onclick=()=> openEmpEdit(b.dataset.ed));
+    el.querySelector('#empSearch').oninput=ev=>{
+      const q=ev.target.value.trim().toLowerCase();
+      el.querySelectorAll('.emp-grp').forEach(g=>{
+        let vis=0;
+        g.querySelectorAll('.emp').forEach(r=>{ const ok=!q||r.dataset.s.includes(q); r.style.display=ok?'':'none'; if(ok) vis++; });
+        g.style.display=vis?'':'none';
+      });
+    };
+  },0);
+  return el;
+}
+
+function openEmpEdit(id){
+  empEditId=id;
+  const e = id ? EMPS.list.find(x=>x.id===id) : {n:'',l:'',k:'',dept:'',role:'',ph:''};
+  document.getElementById('empTitle').textContent = id ? 'עריכת עובד' : 'עובד חדש';
+  document.getElementById('efN').value=e.n||''; document.getElementById('efL').value=e.l||'';
+  document.getElementById('efK').value=e.k||''; document.getElementById('efDept').value=e.dept||'';
+  document.getElementById('efRole').value=e.role||''; document.getElementById('efPh').value=e.ph||'';
+  document.getElementById('efBd').value = e.d ? `${e.y||2000}-${e.d}` : '';
+  document.getElementById('efDelRow').style.display = id ? '' : 'none';
+  document.getElementById('empOv').classList.add('active');
+}
+document.getElementById('efCancel').onclick=()=> document.getElementById('empOv').classList.remove('active');
+document.getElementById('efSave').onclick=()=>{
+  const v=k=>document.getElementById(k).value.trim();
+  if(!v('efN') && !v('efK')){ toast('יש להזין שם'); return; }
+  const bd=v('efBd');
+  const rec={ n:v('efN')||v('efK'), l:v('efL'), dept:v('efDept'), role:v('efRole'), ed:true };
+  if(v('efK')) rec.k=v('efK');
+  if(v('efPh')) rec.ph=v('efPh');
+  if(bd){ const [y,m,d]=bd.split('-'); rec.d=m+'-'+d; rec.y=+y; }
+  if(empEditId){ const i=EMPS.list.findIndex(x=>x.id===empEditId); EMPS.list[i]=Object.assign({id:empEditId}, rec); }
+  else EMPS.list.push(Object.assign({id:'u'+Date.now()}, rec));
+  saveEmps(); document.getElementById('empOv').classList.remove('active'); render(); toast('נשמר');
+};
+document.getElementById('efDel').onclick=()=>{
+  if(!empEditId || !confirm('למחוק את העובד?')) return;
+  EMPS.list=EMPS.list.filter(x=>x.id!==empEditId);
+  if(!empEditId.startsWith('u')){ EMPS.del=EMPS.del||[]; EMPS.del.push(empEditId); }
+  saveEmps(); document.getElementById('empOv').classList.remove('active'); render(); toast('נמחק');
+};
+
 /* ================= UTIL ================= */
 function deepRows(rows){ return JSON.parse(JSON.stringify(rows||[])); }
 function escapeHtml(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -912,6 +1215,7 @@ document.querySelectorAll('.ov').forEach(o=> o.addEventListener('click',e=>{ if(
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
 
 render();
+refreshEmpsIfNewer().then(()=>checkBirthdays());
 </script>
 </body>
 </html>
