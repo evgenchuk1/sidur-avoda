@@ -1123,7 +1123,8 @@ function viewEmps(){
         }).join('<br>') : 'אין ימי הולדת ב-30 הימים הקרובים.';
   el.innerHTML+=`<div class="bd-up">${bh}</div>`;
 
-  const notifState = !('Notification' in window) ? '' : Notification.permission==='granted' ? '🔔 התראות פעילות' : '🔔 אפשר התראות';
+  const notifState = localStorage.getItem(PUSH_LS)==='1' && 'Notification' in window && Notification.permission==='granted'
+                     ? '🔔 התראות פעילות ✓' : '🔔 קבלת התראות ימי הולדת';
   el.innerHTML+=`<div class="emp-tools">
       <button class="btn btn-soft" id="empSoundTest">🔊 בדיקת צליל</button>
       ${notifState?`<button class="btn btn-soft" id="empNotif">${notifState}</button>`:''}
@@ -1156,7 +1157,7 @@ function viewEmps(){
   setTimeout(()=>{
     el.querySelector('#empSoundTest').onclick=()=> playAlarm();
     const bn=el.querySelector('#empNotif');
-    if(bn) bn.onclick=async()=>{ try{ const p=await Notification.requestPermission(); toast(p==='granted'?'התראות הופעלו':'ההתראות לא אושרו'); render(); }catch(e){ toast('הדפדפן לא תומך בהתראות'); } };
+    if(bn) bn.onclick=async()=>{ bn.disabled=true; bn.textContent='⏳ רושם…'; await enablePush(); render(); };
     const bs=el.querySelector('#empShowBd'); if(bs) bs.onclick=()=> checkBirthdays(true);
     el.querySelector('#empAdd').onclick=()=> openEmpEdit(null);
     el.querySelectorAll('[data-ed]').forEach(b=> b.onclick=()=> openEmpEdit(b.dataset.ed));
@@ -1170,6 +1171,59 @@ function viewEmps(){
     };
   },0);
   return el;
+}
+
+/* ---- Web Push: התראה על יום הולדת גם כשהאפליקציה סגורה ----
+   הטלפון נרשם ב-Firestore (sidur_bd_subs); GitHub Actions (evgenchuk1/sidur-notify) שולח כל בוקר ב-07:00. */
+const VAPID_PUBLIC_KEY = 'BKg2aowHERHPq9v8eFuay6KNjQNGR2RiHVBko9xHV2HSV2ZOqCQOGkqDmr2gYbPlmkNOzDvqV9PsXdbpjmwkXQg';
+const PUSH_FS = 'https://firestore.googleapis.com/v1/projects/expiry-tracker-ebf92/databases/(default)/documents/sidur_bd_subs/';
+const PUSH_LS = EMP_LS+'_push';
+
+function urlB64ToUint8Array(b64){
+  const p='='.repeat((4-b64.length%4)%4), s=atob((b64+p).replace(/-/g,'+').replace(/_/g,'/'));
+  return Uint8Array.from(s, c=>c.charCodeAt(0));
+}
+async function saveSubToServer(sub){
+  const j=sub.toJSON();
+  const h=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(j.endpoint));
+  const id=[...new Uint8Array(h)].slice(0,16).map(b=>b.toString(16).padStart(2,'0')).join('');
+  const fields={ endpoint:{stringValue:j.endpoint}, p256dh:{stringValue:j.keys.p256dh}, auth:{stringValue:j.keys.auth},
+                 name:{stringValue:localStorage.getItem(PUSH_LS+'_name')||''}, updated:{stringValue:new Date().toISOString()} };
+  const r=await fetch(PUSH_FS+id, {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({fields})});
+  if(!r.ok) throw new Error('save '+r.status);
+}
+async function enablePush(){
+  const standalone = window.navigator.standalone || matchMedia('(display-mode: standalone)').matches;
+  if(!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)){
+    alert(/iPhone|iPad/.test(navigator.userAgent) && !standalone
+      ? 'באייפון ההתראות עובדות רק מהאפליקציה שעל המסך הראשי:\nספארי ← שיתוף ← "הוסף למסך הבית", ואז לפתוח מהאייקון וללחוץ שוב.'
+      : 'הדפדפן הזה לא תומך בהתראות.');
+    return;
+  }
+  try{
+    const perm=await Notification.requestPermission();
+    if(perm!=='granted'){ toast('ההתראות לא אושרו — אפשר לאשר בהגדרות הטלפון'); return; }
+    if(!localStorage.getItem(PUSH_LS+'_name')){
+      const n=prompt('השם שלך (לא חובה — כדי לדעת מי רשום):','');
+      if(n) localStorage.setItem(PUSH_LS+'_name', n.trim());
+    }
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub) sub=await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:urlB64ToUint8Array(VAPID_PUBLIC_KEY)});
+    await saveSubToServer(sub);
+    localStorage.setItem(PUSH_LS,'1');
+    toast('🔔 נרשמת! תקבל/י התראה בבוקר של כל יום הולדת');
+  }catch(e){ toast('שגיאה ברישום להתראות — נסה/י שוב'); }
+}
+/* בכל פתיחה: מרעננים את הרישום בשרת (המנוי עלול להשתנות) */
+async function syncPushSub(){
+  try{
+    if(localStorage.getItem(PUSH_LS)!=='1' || Notification.permission!=='granted') return;
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub) sub=await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:urlB64ToUint8Array(VAPID_PUBLIC_KEY)});
+    await saveSubToServer(sub);
+  }catch(e){}
 }
 
 function openEmpEdit(id){
@@ -1215,7 +1269,13 @@ document.querySelectorAll('.ov').forEach(o=> o.addEventListener('click',e=>{ if(
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
 
 render();
-refreshEmpsIfNewer().then(()=>checkBirthdays());
+refreshEmpsIfNewer().then(()=>{
+  // פתיחה מהתראת push (?bd=1) — מציגים את הפופ-אפ עם צליל גם אם כבר נראה היום
+  const fromPush=new URLSearchParams(location.search).get('bd')==='1';
+  if(fromPush) history.replaceState(null,'',location.pathname);
+  checkBirthdays(fromPush);
+  syncPushSub();
+});
 </script>
 </body>
 </html>

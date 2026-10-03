@@ -1,4 +1,4 @@
-const CACHE = 'sidur-evoda-v5';
+const CACHE = 'sidur-evoda-v6';
 const ASSETS = ['./', './index.html', './manifest.json', './logo.jpg', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -20,4 +20,32 @@ self.addEventListener('fetch', e => {
       return res;
     }).catch(() => caches.match('./index.html')))
   );
+});
+
+// ===== Push: התראת יום הולדת (נשלחת מ-GitHub Actions, evgenchuk1/sidur-notify) =====
+self.addEventListener('push', e => {
+  let data = {};
+  try { data = e.data ? e.data.json() : {}; } catch (_) { data = { body: e.data && e.data.text() }; }
+  e.waitUntil(self.registration.showNotification(data.title || '🎂 יום הולדת היום בסניף!', {
+    body: data.body || '',
+    icon: 'icon-192.png',
+    badge: 'icon-192.png',
+    tag: data.tag || 'bd',
+    renotify: true,
+    requireInteraction: true,
+    vibrate: [400, 150, 400, 150, 800],
+    data: { url: data.url || './?bd=1' }
+  }));
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const url = new URL(e.notification.data?.url || './?bd=1', self.registration.scope).href;
+  e.waitUntil((async () => {
+    const wins = await clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const w of wins) {
+      if (w.url.startsWith(self.registration.scope)) { await w.navigate(url).catch(() => {}); return w.focus(); }
+    }
+    return clients.openWindow(url);
+  })());
 });
