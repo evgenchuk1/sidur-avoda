@@ -144,7 +144,8 @@ table.sched{border-collapse:collapse;width:100%;min-width:600px;font-size:.9rem}
 /* ===== FOOTER ===== */
 .app-footer{position:fixed;bottom:0;left:0;right:0;text-align:center;padding:7px 0 env(safe-area-inset-bottom,8px);background:var(--bg);border-top:1px solid #f5c0c0;z-index:50}
 .cp-link{font-size:11px;color:rgba(140,0,30,.45);cursor:pointer;text-decoration:underline}
-.cp-box{max-width:360px}
+.cp-box{max-width:360px;max-height:88vh;overflow-y:auto}
+.cp-sep{border:none;border-top:1px solid #eee;margin:14px 0}
 .cp-text{font-size:13.5px;line-height:1.8;color:#444}
 .toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%) translateY(20px);background:#2A0010;color:#fff;padding:10px 18px;border-radius:999px;font-size:.85rem;font-weight:700;opacity:0;transition:all .3s;z-index:600;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -216,7 +217,7 @@ table.st td.wk{background:#fff5f7;font-weight:900;color:var(--primary-dark)}
 <main class="wrap" id="content"></main>
 
 <footer class="app-footer">
-  <span class="cp-link" id="cpLink">© יבגני ציפיס 2026 — כל הזכויות שמורות</span>
+  <span class="cp-link" id="cpLink">© Evgeniy Tsipis 2026 — All rights reserved · כל הזכויות שמורות</span>
 </footer>
 
 <!-- OCR MODAL -->
@@ -244,12 +245,19 @@ table.st td.wk{background:#fff5f7;font-weight:900;color:var(--primary-dark)}
 <!-- COPYRIGHT MODAL -->
 <div class="ov" id="cpOv">
   <div class="modal cp-box">
-    <h3>זכויות יוצרים</h3>
+    <h3>זכויות יוצרים · Copyright</h3>
     <div class="cp-text">
       © כל הזכויות שמורות ליבגני ציפיס 2026<br><br>
-      יישום זה פותח ועוצב על ידי יבגני ציפיס לניהול וצפייה בסידורי העבודה של מחלקות הסניף.<br><br>
+      יישום זה פותח ועוצב על ידי יבגני ציפיס עבור סניף שופרסל 118, לניהול וצפייה בסידורי העבודה של מחלקות הסניף.<br><br>
       חל איסור על העתקה, הפצה או שימוש מסחרי בכל חלק מהיישום ללא אישור בכתב מהמחבר.<br><br>
       כל הסימנים המסחריים הם רכושם של בעליהם בהתאמה.
+    </div>
+    <hr class="cp-sep">
+    <div class="cp-text" style="text-align:left;direction:ltr">
+      © 2026 Evgeniy Tsipis. All rights reserved.<br><br>
+      This application was developed and designed by Evgeniy Tsipis for Shufersal branch 118, to manage and view the work schedules of the branch departments.<br><br>
+      Copying, distribution or commercial use of any part of this application without the author's written permission is prohibited.<br><br>
+      All trademarks are the property of their respective owners.
     </div>
     <div class="modal-actions">
       <button class="btn btn-line" id="btnExport">גיבוי (ייצוא)</button>
