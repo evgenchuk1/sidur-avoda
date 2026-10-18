@@ -1,4 +1,4 @@
-const CACHE = 'sidur-evoda-v9';
+const CACHE = 'sidur-evoda-v10';
 const ASSETS = ['./', './index.html', './manifest.json', './logo.jpg', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
