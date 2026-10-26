@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#CC0030">
+<meta name="theme-color" content="#203550">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="סידור עבודה">
@@ -14,9 +14,10 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --primary:#CC0030; --primary-mid:#E8003A; --primary-dark:#990020;
-  --bg:#FFECEC; --surface:#fff; --text:#2A0010; --muted:#8a5566;
-  --line:#f0cdd4; --radius:14px; --shadow:0 2px 12px rgba(180,0,40,.13);
+  /* ET studio: navy + gold */
+  --primary:#203550; --primary-mid:#2C4A70; --primary-dark:#15243A; --gold:#CFAB6F;
+  --bg:#F4F1EA; --surface:#fff; --text:#1B2A41; --muted:#6E7586;
+  --line:#DDD8CC; --radius:14px; --shadow:0 2px 12px rgba(32,53,80,.13);
 }
 html,body{overscroll-behavior-y:none}
 body{
@@ -27,12 +28,12 @@ body{
 
 /* ===== HEADER ===== */
 .app-header{
-  background:linear-gradient(135deg,#DD0030 0%,#AA0020 100%); color:#fff;
+  background:linear-gradient(135deg,#2C4A70 0%,#15243A 100%); color:#fff;border-bottom:3px solid var(--gold);
   padding:calc(env(safe-area-inset-top,0) + 12px) 14px 10px;
-  position:sticky; top:0; z-index:100; box-shadow:0 4px 20px rgba(180,0,40,.5);
+  position:sticky; top:0; z-index:100; box-shadow:0 4px 20px rgba(32,53,80,.5);
 }
 .hdr-row{display:flex;align-items:center;gap:11px}
-.hdr-logo{width:44px;height:44px;border-radius:11px;object-fit:cover;flex-shrink:0;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+.hdr-logo{width:48px;height:48px;border-radius:12px;object-fit:cover;flex-shrink:0;background:#F4F1EA;border:2px solid var(--gold);box-shadow:0 2px 10px rgba(0,0,0,.35)}
 .hdr-titles{display:flex;flex-direction:column;flex:1;min-width:0}
 .app-title{font-size:1.25rem;font-weight:900;letter-spacing:-.3px;line-height:1.15;text-shadow:0 1px 3px rgba(0,0,0,.25)}
 .app-sub{font-size:.76rem;opacity:.85;margin-top:2px}
@@ -44,18 +45,18 @@ body{
 }
 .week-select option{color:#222}
 .btn-ghost{
-  border:2px solid rgba(255,255,255,.45);background:rgba(255,255,255,.14);color:#fff;
+  border:2px solid rgba(207,171,111,.6);background:rgba(255,255,255,.1);color:#fff;
   border-radius:999px;padding:7px 12px;font-family:inherit;font-weight:800;font-size:.86rem;
   cursor:pointer;white-space:nowrap;flex-shrink:0;
 }
 .btn-ghost:active{opacity:.6}
-.btn-ghost.on{background:#fff;color:var(--primary);border-color:#fff}
+.btn-ghost.on{background:var(--gold);color:var(--primary-dark);border-color:var(--gold)}
 
 /* ===== TABS ===== */
 .tabs{
   display:flex;gap:6px;background:var(--surface);padding:8px 10px;overflow-x:auto;
-  position:sticky;top:0;z-index:99;border-bottom:2px solid #f5c0c0;
-  box-shadow:0 2px 8px rgba(180,0,40,.08);scrollbar-width:none;
+  position:sticky;top:0;z-index:99;border-bottom:2px solid #DDD8CC;
+  box-shadow:0 2px 8px rgba(32,53,80,.08);scrollbar-width:none;
 }
 .tabs::-webkit-scrollbar{display:none}
 .tab{
@@ -70,7 +71,7 @@ body{
 .wrap{padding:14px 12px 20px;max-width:900px;margin:0 auto}
 .banner{
   background:#fff;border:1px solid var(--line);border-right:5px solid var(--primary);
-  border-radius:12px;padding:10px 13px;font-size:.86rem;line-height:1.6;color:#5a3a44;margin-bottom:12px;
+  border-radius:12px;padding:10px 13px;font-size:.86rem;line-height:1.6;color:#3A4458;margin-bottom:12px;
   white-space:pre-wrap;
 }
 .banner.warn{border-right-color:#E8A400;background:#fff9ec;color:#7a5a10}
@@ -81,8 +82,8 @@ body{
   border:none;border-radius:11px;padding:10px 14px;font-family:inherit;font-weight:800;font-size:.9rem;
   cursor:pointer;display:inline-flex;align-items:center;gap:6px;
 }
-.btn-primary{background:linear-gradient(135deg,#E8003A,#AA0020);color:#fff;box-shadow:0 4px 14px rgba(180,0,40,.35)}
-.btn-soft{background:#ffe3ea;color:var(--primary-dark)}
+.btn-primary{background:linear-gradient(135deg,#2C4A70,#15243A);color:#fff;box-shadow:0 4px 14px rgba(32,53,80,.35)}
+.btn-soft{background:#EAEEF4;color:var(--primary-dark)}
 .btn-line{background:#fff;border:2px solid var(--line);color:var(--muted)}
 .btn:active{opacity:.65}
 .btn:disabled{opacity:.4}
@@ -92,10 +93,10 @@ body{
 table.sched{border-collapse:collapse;width:100%;min-width:600px;font-size:.9rem}
 .sched th,.sched td{border:1px solid var(--line);padding:7px 6px;text-align:center;vertical-align:middle;white-space:pre-line;line-height:1.35}
 .sched thead th{background:var(--primary);color:#fff;font-weight:800;position:sticky;top:0}
-.sched .name-col{position:sticky;right:0;background:#fff5f7;font-weight:800;text-align:right;min-width:104px;z-index:2}
+.sched .name-col{position:sticky;right:0;background:#F7F5EF;font-weight:800;text-align:right;min-width:104px;z-index:2}
 .sched thead .name-col{background:var(--primary-dark);color:#fff;z-index:3}
-.sched .grp-row td{background:#ffe3ea;color:var(--primary-dark);font-weight:800;text-align:right;font-size:.82rem}
-.sched td.off{color:#bd8f9c;font-weight:600}
+.sched .grp-row td{background:#EAEEF4;color:var(--primary-dark);font-weight:800;text-align:right;font-size:.82rem}
+.sched td.off{color:#A0A7B4;font-weight:600}
 .sched .today-col{background:#fff2c9}
 .sched thead .today-col{background:#b8860b}
 .sched td input{width:100%;min-width:74px;border:1px solid var(--line);border-radius:7px;padding:5px 4px;font-family:inherit;font-size:.82rem;text-align:center}
@@ -113,9 +114,9 @@ table.sched{border-collapse:collapse;width:100%;min-width:600px;font-size:.9rem}
 .day-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 .day-btn.active small{color:rgba(255,255,255,.85)}
 .day-dept{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
-.day-dept h3{background:#ffe3ea;color:var(--primary-dark);font-size:.92rem;font-weight:900;padding:8px 12px;display:flex;justify-content:space-between}
+.day-dept h3{background:#EAEEF4;color:var(--primary-dark);font-size:.92rem;font-weight:900;padding:8px 12px;display:flex;justify-content:space-between}
 .day-dept ul{list-style:none}
-.day-dept li{display:flex;justify-content:space-between;gap:10px;padding:9px 13px;border-top:1px solid #f6dde3;font-size:.9rem}
+.day-dept li{display:flex;justify-content:space-between;gap:10px;padding:9px 13px;border-top:1px solid #ECE8DE;font-size:.9rem}
 .day-dept li:first-child{border-top:none}
 .day-dept li .hrs{font-weight:800;color:var(--primary-dark);white-space:nowrap}
 .day-dept li.none{color:var(--muted);justify-content:center}
@@ -125,36 +126,37 @@ table.sched{border-collapse:collapse;width:100%;min-width:600px;font-size:.9rem}
 .arch-item{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .arch-item b{font-size:.98rem}
 .arch-item small{color:var(--muted);display:block;margin-top:2px;font-size:.75rem}
-.arch-item.viewing{border-color:var(--primary);box-shadow:0 0 0 2px rgba(204,0,48,.15)}
+.arch-item.viewing{border-color:var(--primary);box-shadow:0 0 0 2px rgba(32,53,80,.15)}
 
 /* ===== MODAL ===== */
-.ov{position:fixed;inset:0;z-index:400;background:rgba(70,0,20,.6);display:none;align-items:flex-start;justify-content:center;padding:20px 14px;backdrop-filter:blur(3px);overflow-y:auto}
+.ov{position:fixed;inset:0;z-index:400;background:rgba(21,36,58,.6);display:none;align-items:flex-start;justify-content:center;padding:20px 14px;backdrop-filter:blur(3px);overflow-y:auto}
 .ov.active{display:flex}
-.modal{background:#fff;border-radius:20px;padding:20px 18px;max-width:520px;width:100%;box-shadow:0 8px 40px rgba(180,0,40,.28);margin:auto}
+.modal{background:#fff;border-radius:20px;padding:20px 18px;max-width:520px;width:100%;box-shadow:0 8px 40px rgba(32,53,80,.28);margin:auto}
 .modal h3{font-size:1.1rem;font-weight:900;color:var(--primary);margin-bottom:12px;text-align:center}
 .modal p.hint{font-size:.83rem;color:var(--muted);line-height:1.6;margin-bottom:12px}
 .file-drop{border:2px dashed var(--line);border-radius:13px;padding:18px;text-align:center;color:var(--muted);font-size:.88rem;font-weight:700;margin-bottom:12px}
 .file-drop input{display:block;margin:10px auto 0;font-size:.8rem}
 .ocr-status{font-size:.85rem;font-weight:800;color:var(--primary-dark);text-align:center;margin:10px 0;min-height:20px}
-.prog{height:8px;background:#ffe3ea;border-radius:99px;overflow:hidden;margin-bottom:12px}
+.prog{height:8px;background:#EAEEF4;border-radius:99px;overflow:hidden;margin-bottom:12px}
 .prog i{display:block;height:100%;width:0;background:var(--primary);transition:width .3s}
 .modal-actions{display:flex;gap:8px;margin-top:14px}
 .modal-actions .btn{flex:1;justify-content:center}
 
 /* ===== FOOTER ===== */
-.app-footer{position:fixed;bottom:0;left:0;right:0;text-align:center;padding:7px 0 env(safe-area-inset-bottom,8px);background:var(--bg);border-top:1px solid #f5c0c0;z-index:50}
-.cp-link{font-size:11px;color:rgba(140,0,30,.45);cursor:pointer;text-decoration:underline}
-.cp-box{max-width:360px;max-height:88vh;overflow-y:auto}
+.app-footer{position:fixed;bottom:0;left:0;right:0;text-align:center;padding:7px 0 env(safe-area-inset-bottom,8px);background:var(--bg);border-top:1px solid #DDD8CC;z-index:50}
+.cp-link{font-size:11px;color:rgba(32,53,80,.5);cursor:pointer;text-decoration:underline}
+.cp-box{max-width:360px;max-height:88vh;overflow-y:auto;border-top:4px solid var(--gold)}
+.cp-logo{display:block;width:110px;margin:0 auto 10px;border-radius:12px}
 .cp-sep{border:none;border-top:1px solid #eee;margin:14px 0}
 .cp-text{font-size:13.5px;line-height:1.8;color:#444}
-.toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%) translateY(20px);background:#2A0010;color:#fff;padding:10px 18px;border-radius:999px;font-size:.85rem;font-weight:700;opacity:0;transition:all .3s;z-index:600;pointer-events:none}
+.toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%) translateY(20px);background:#15243A;color:#fff;padding:10px 18px;border-radius:999px;font-size:.85rem;font-weight:700;opacity:0;transition:all .3s;z-index:600;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 /* ===== EMPLOYEES ===== */
 .emp-tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .emp-search{width:100%;border:2px solid var(--line);border-radius:12px;padding:10px 13px;font-family:inherit;font-size:.95rem;margin-bottom:12px;background:#fff}
 .emp-grp{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
-.emp-grp h3{background:#ffe3ea;color:var(--primary-dark);font-size:.92rem;font-weight:900;padding:8px 12px;display:flex;justify-content:space-between}
-.emp{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid #f6dde3}
+.emp-grp h3{background:#EAEEF4;color:var(--primary-dark);font-size:.92rem;font-weight:900;padding:8px 12px;display:flex;justify-content:space-between}
+.emp{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid #ECE8DE}
 .emp:first-of-type{border-top:none}
 .emp .who{flex:1;min-width:0}
 .emp .who b{font-size:.95rem}
@@ -162,7 +164,7 @@ table.sched{border-collapse:collapse;width:100%;min-width:600px;font-size:.9rem}
 .emp .who .bd{color:var(--primary-dark);font-weight:700}
 .emp.today{background:#fff2c9}
 .ic-btn{width:38px;height:38px;border-radius:50%;border:none;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem;text-decoration:none;flex-shrink:0;cursor:pointer}
-.ic-call{background:#e3f5e8}.ic-wa{background:#dcf8c6}.ic-edit{background:#f4eef0}
+.ic-call{background:#e3f5e8}.ic-wa{background:#dcf8c6}.ic-edit{background:#EEF1F6}
 .bd-up{background:#fff;border:1px solid var(--line);border-right:5px solid #E8A400;border-radius:12px;padding:10px 13px;margin-bottom:12px;font-size:.87rem;line-height:1.75}
 .bd-up b{color:var(--primary-dark)}
 .lock-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 16px;text-align:center;box-shadow:var(--shadow)}
@@ -189,8 +191,8 @@ table.sched{border-collapse:collapse;width:100%;min-width:600px;font-size:.9rem}
 .st-h{font-size:.98rem;font-weight:900;color:var(--primary-dark);margin:16px 0 8px}
 table.st{min-width:0}
 table.st td,table.st th{font-variant-numeric:tabular-nums}
-table.st tr.tot td{background:#ffe3ea;font-weight:900;color:var(--primary-dark)}
-table.st td.wk{background:#fff5f7;font-weight:900;color:var(--primary-dark)}
+table.st tr.tot td{background:#EAEEF4;font-weight:900;color:var(--primary-dark)}
+table.st td.wk{background:#F7F5EF;font-weight:900;color:var(--primary-dark)}
 .st .q,.st-note .q{color:#b8860b;font-weight:800}
 .st-note{font-size:.76rem;color:var(--muted);margin-top:6px;line-height:1.6}
 </style>
@@ -199,7 +201,7 @@ table.st td.wk{background:#fff5f7;font-weight:900;color:var(--primary-dark)}
 
 <header class="app-header">
   <div class="hdr-row">
-    <img src="logo.jpg" class="hdr-logo" alt="לוגו">
+    <img src="et-mark.png" class="hdr-logo" alt="ET studio">
     <div class="hdr-titles">
       <div class="app-title">סידור עבודה — סניף</div>
       <div class="app-sub">מעבר מהיר בין סידורי המחלקות · צפייה לפי יום</div>
@@ -217,7 +219,7 @@ table.st td.wk{background:#fff5f7;font-weight:900;color:var(--primary-dark)}
 <main class="wrap" id="content"></main>
 
 <footer class="app-footer">
-  <span class="cp-link" id="cpLink">© Evgeniy Tsipis 2026 — All rights reserved · כל הזכויות שמורות</span>
+  <span class="cp-link" id="cpLink">© 2026 ET studio · Evgeniy Tsipis — All rights reserved · כל הזכויות שמורות</span>
 </footer>
 
 <!-- OCR MODAL -->
@@ -245,17 +247,18 @@ table.st td.wk{background:#fff5f7;font-weight:900;color:var(--primary-dark)}
 <!-- COPYRIGHT MODAL -->
 <div class="ov" id="cpOv">
   <div class="modal cp-box">
+    <img class="cp-logo" src="et-logo.jpg" alt="ET studio">
     <h3>זכויות יוצרים · Copyright</h3>
     <div class="cp-text">
-      © כל הזכויות שמורות ליבגני ציפיס 2026<br><br>
-      יישום זה פותח ועוצב על ידי יבגני ציפיס עבור סניף שופרסל 118, לניהול וצפייה בסידורי העבודה של מחלקות הסניף.<br><br>
+      © כל הזכויות שמורות ליבגני ציפיס, ET studio 2026<br><br>
+      יישום זה פותח ועוצב על ידי יבגני ציפיס (ET studio) עבור סניף שופרסל 118, לניהול וצפייה בסידורי העבודה של מחלקות הסניף.<br><br>
       חל איסור על העתקה, הפצה או שימוש מסחרי בכל חלק מהיישום ללא אישור בכתב מהמחבר.<br><br>
       כל הסימנים המסחריים הם רכושם של בעליהם בהתאמה.
     </div>
     <hr class="cp-sep">
     <div class="cp-text" style="text-align:left;direction:ltr">
-      © 2026 Evgeniy Tsipis. All rights reserved.<br><br>
-      This application was developed and designed by Evgeniy Tsipis for Shufersal branch 118, to manage and view the work schedules of the branch departments.<br><br>
+      © 2026 Evgeniy Tsipis, ET studio. All rights reserved.<br><br>
+      This application was developed and designed by Evgeniy Tsipis (ET studio) for Shufersal branch 118, to manage and view the work schedules of the branch departments.<br><br>
       Copying, distribution or commercial use of any part of this application without the author's written permission is prohibited.<br><br>
       All trademarks are the property of their respective owners.
     </div>
@@ -687,7 +690,7 @@ function buildTable(rows, highlightToday){
   DAYS.forEach((d,i)=> html+=`<th class="${highlightToday&&i===todayIdx()?'today-col':''}">${d.k}<br><span style="font-weight:600;font-size:.72rem">${d.full.replace('יום ','')}</span></th>`);
   html+='</tr></thead><tbody>';
   let lastG=null;
-  if(!rows.length) html+=`<tr><td class="name-col">—</td><td colspan="6" style="color:#bd8f9c">אין נתונים לשבוע זה</td></tr>`;
+  if(!rows.length) html+=`<tr><td class="name-col">—</td><td colspan="6" style="color:#A0A7B4">אין נתונים לשבוע זה</td></tr>`;
   rows.forEach(r=>{
     if(r.group && r.group!==lastG){ html+=`<tr class="grp-row"><td colspan="7">${escapeHtml(r.group)}</td></tr>`; lastG=r.group; }
     html+=`<tr><td class="name-col">${escapeHtml(r.name||'')}</td>`;
@@ -889,7 +892,7 @@ function viewStats(){
   let t2=`<div class="st-h">שעות לכל עובד</div><div class="sched-wrap"><table class="sched st">
     <thead><tr><th class="name-col">עובד</th>${DAYS.map((d,i)=>`<th class="${i===ti?'today-col':''}">${d.k}</th>`).join('')}<th>סה"כ</th></tr></thead><tbody>`;
   let lastDept=null;
-  if(!people.length) t2+=`<tr><td class="name-col">—</td><td colspan="7" style="color:#bd8f9c">אין נתונים לשבוע זה</td></tr>`;
+  if(!people.length) t2+=`<tr><td class="name-col">—</td><td colspan="7" style="color:#A0A7B4">אין נתונים לשבוע זה</td></tr>`;
   people.forEach(p=>{
     if(sel==='all' && p.dept!==lastDept){ t2+=`<tr class="grp-row"><td colspan="8">${escapeHtml(p.dept)}${p.temp?' ⏳':''}</td></tr>`; lastDept=p.dept; }
     t2+=`<tr><td class="name-col">${escapeHtml(p.name)}</td>`+p.days.map((d,i)=>{
