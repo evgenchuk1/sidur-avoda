@@ -120,6 +120,11 @@ table.sched{border-collapse:collapse;width:100%;min-width:600px;font-size:.9rem}
 .day-dept li:first-child{border-top:none}
 .day-dept li .hrs{font-weight:800;color:var(--primary-dark);white-space:nowrap}
 .day-dept li.none{color:var(--muted);justify-content:center}
+.day-dept li.grp{background:#F4F1EA;color:var(--primary-dark);font-weight:800;font-size:.78rem;padding:5px 13px}
+.day-dept li.off{background:#FAFAF8}
+.day-dept li.off span{color:#A0A7B4}
+.day-dept li.off .hrs{color:#A0A7B4;font-weight:700}
+.day-dept h3 small{font-weight:700;color:var(--muted);font-size:.78rem;margin-inline-start:8px}
 .day-total{text-align:center;font-weight:800;color:var(--muted);font-size:.86rem;margin-bottom:12px}
 
 /* ===== ARCHIVE ===== */
@@ -706,7 +711,7 @@ function buildTable(rows, highlightToday){
   let lastG=null;
   if(!rows.length) html+=`<tr><td class="name-col">—</td><td colspan="6" style="color:#A0A7B4">אין נתונים לשבוע זה</td></tr>`;
   rows.forEach(r=>{
-    if(r.group && r.group!==lastG){ html+=`<tr class="grp-row"><td colspan="7">${escapeHtml(r.group)}</td></tr>`; lastG=r.group; }
+    if(r.group && r.group!==lastG){ html+=`<tr class="grp-row"><td class="name-col">${escapeHtml(r.group)}</td><td colspan="6"></td></tr>`; lastG=r.group; }
     html+=`<tr><td class="name-col">${escapeHtml(r.name||'')}</td>`;
     r.cells.forEach((c,i)=>{
       const off=isOff(c);
@@ -787,22 +792,32 @@ function viewDay(){
   });
   el.appendChild(grid);
 
-  let total=0;
+  let total=0, totalOff=0;
   const out=document.createElement('div');
   DEPTS.forEach(meta=>{
     const dept=wk.depts[meta.id]; if(!dept) return;
-    const workers=dept.rows.filter(r=>(r.name||'').trim() && !isOff(r.cells[ui.dayIdx]));
-    total+=workers.length;
+    // כל העובדים של המחלקה — באותו סדר וקבוצות כמו בטבלת המחלקה; מי שלא עובד מוצג באפור עם הסטטוס (חופש/מחלה/—)
+    const people=dept.rows.filter(r=>(r.name||'').trim());
+    const working=people.filter(r=>!isOff(r.cells[ui.dayIdx])).length;
+    const offCnt=people.length-working;
+    total+=working; totalOff+=offCnt;
     const card=document.createElement('div'); card.className='day-dept';
-    card.innerHTML=`<h3><span>${meta.name}${dept.temp?' ⏳':''}</span><span>${workers.length}</span></h3>`;
+    card.innerHTML=`<h3><span>${meta.name}${dept.temp?' ⏳':''}</span><span>${working}${offCnt?`<small>${offCnt} לא עובדים</small>`:''}</span></h3>`;
     const ul=document.createElement('ul');
-    if(!workers.length){ ul.innerHTML=`<li class="none">אף עובד</li>`; }
-    else workers.forEach(w=> ul.innerHTML+=`<li><span>${escapeHtml(w.name)}</span><span class="hrs">${escapeHtml(w.cells[ui.dayIdx])}</span></li>`);
+    let html='', lastG=null;
+    if(!people.length) html=`<li class="none">אין נתונים</li>`;
+    people.forEach(w=>{
+      if(w.group && w.group!==lastG){ html+=`<li class="grp">${escapeHtml(w.group)}</li>`; lastG=w.group; }
+      const v=(w.cells[ui.dayIdx]||'').trim();
+      const off=isOff(v);
+      html+=`<li class="${off?'off':''}"><span>${escapeHtml(w.name)}</span><span class="hrs">${escapeHtml(v)||'—'}</span></li>`;
+    });
+    ul.innerHTML=html;
     card.appendChild(ul);
     out.appendChild(card);
   });
   const tot=document.createElement('div'); tot.className='day-total';
-  tot.textContent=`סה"כ ${total} עובדים ביום ${DAYS[ui.dayIdx].full.replace('יום ','')}`;
+  tot.textContent=`סה"כ ${total} עובדים ביום ${DAYS[ui.dayIdx].full.replace('יום ','')}`+(totalOff?` · ${totalOff} לא עובדים (חופש/מחלה)`:'');
   el.appendChild(tot);
   el.appendChild(out);
   return el;
